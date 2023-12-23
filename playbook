@@ -1,0 +1,132 @@
+- hosts: fortigate
+  connection: httpapi
+  collections:
+  - fortinet.fortios
+
+  vars:
+   vdom: "root"
+   ansible_httpapi_use_ssl: no
+   ansible_httpapi_validate_certs: no
+   ansible_httpapi_port: 80
+
+  tasks:
+
+  - name: add static route to reach partner gateway
+    fortios_json_generic:
+      vdom:  "{{ vdom }}"
+      access_token: "{{ fortios_access_token }}"
+      json_generic:
+        method: "POST"
+        path: "/api/v2/cmdb/router/static"
+        jsonbody: |
+          {
+           "dst": "17.17.78.2/32",
+           "gateway": "10.8.10.5",
+           "device": "port3",
+           "comment": "ccc"
+          }
+
+ - name: Cretae adresse objet for gw partner
+    fortios_json_generic:
+      vdom:  "{{ vdom }}"
+      access_token: "{{ fortios_access_token }}"
+      json_generic:
+        method: "POST"
+        path: "/api/v2/cmdb/firewall/address"
+        jsonbody: |
+          {
+           "name": "ere",
+           "comment": "ccc",
+           "subnet": "1.11.11.1/32"
+          }
+
+
+  - name: Add gw partner to group remote-vpn-gw
+    fortios_json_generic:
+      vdom:  "{{ vdom }}"
+      access_token: "{{ fortios_access_token }}"
+      json_generic:
+        method: "POST"
+        path: "/api/v2/cmdb/firewall/addrgrp/remote-vpn-gw/member"
+        jsonbody: |
+          {
+          "name": "final_test"
+          }
+
+
+  - name: add static route to reach single IP subnet
+    fortios_json_generic:
+      vdom:  "{{ vdom }}"
+      access_token: "{{ fortios_access_token }}"
+      json_generic:
+        method: "POST"
+        path: "/api/v2/cmdb/router/static"
+        jsonbody: |
+          {
+           "dst": "17.17.78.2/32",
+           "gateway": "10.1.126.1",
+           "device": "Po1.3400",
+           "comment": "ccc"
+          }
+
+
+///////     LOAC subnet add address + create groupe + add addresse to group 
+
+  - name: Cretae adresse objet LOCAL SUBNET
+    fortios_json_generic:
+      vdom:  "{{ vdom }}"
+      access_token: "{{ fortios_access_token }}"
+      json_generic:
+        method: "POST"
+        path: "/api/v2/cmdb/firewall/address"
+        jsonbody: |
+          {
+           "name": "local_subnet",
+           "comment": "local sbnet",
+           "subnet": "1.11.11.1/32"
+          }
+
+
+  - name: Cretae adresse objet LOCAL SUBNET
+    fortios_json_generic:
+      vdom:  "{{ vdom }}"
+      access_token: "{{ fortios_access_token }}"
+      json_generic:
+        method: "POST"
+        path: "/api/v2/cmdb/firewall/addrgrp"
+        jsonbody: |
+          {
+           "name": "local_subnet_groupe",
+           "member": [{"name": "local_subnet"}]
+          }
+
+
+///////     remote subnet add address + create groupe + add addresse to group 
+
+  - name: Cretae adresse objet LOCAL SUBNET
+    fortios_json_generic:
+      vdom:  "{{ vdom }}"
+      access_token: "{{ fortios_access_token }}"
+      json_generic:
+        method: "POST"
+        path: "/api/v2/cmdb/firewall/address"
+        jsonbody: |
+          {
+           "name": "remote_subnet",
+           "comment": "remote sbnet",
+           "subnet": "1.11.11.1/32"
+          }
+
+
+  - name: Cretae adresse objet LOCAL SUBNET
+    fortios_json_generic:
+      vdom:  "{{ vdom }}"
+      access_token: "{{ fortios_access_token }}"
+      json_generic:
+        method: "POST"
+        path: "/api/v2/cmdb/firewall/addrgrp"
+        jsonbody: |
+          {
+           "name": "remote_subnet_groupe",
+           "member": [{"name": "remote_subnet"}]
+          }
